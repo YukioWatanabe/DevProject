@@ -1,0 +1,11 @@
+#grid input,#grid textarea{
+	margin: 15px 0;
+}
+
+#descricao{
+	margin-left:10px;
+}
+
+#logo table{
+	border-collapse:collapse; table-layout:fixed;
+}

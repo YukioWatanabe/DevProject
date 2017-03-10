@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<f:facet name="first">
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link rel="icon" href="#{request.contextPath}/resources/devproject/images/favicon.png" type="image/x-icon" />
+	</f:facet>
+	<title>DevProject</title>
+	<h:outputStylesheet library="primefaces" name="grid/grid.css"/>
+	<h:outputStylesheet library="devproject" name="styles/index.css"/>
+	<h:outputStylesheet library="devproject" name="styles/components.css"/>
+	<h:outputScript library="primefaces" name="jquery/jquery.js"/>
+	<h:outputScript library="devproject" name="scripts/components.js"/>
+</h:head>
+<h:body>
+
+	<p:growl autoUpdate="true" showDetail="true"/>
+	<f:metadata>
+		<f:viewAction action="#{index.inicializar}"/>
+	</f:metadata>
+	<div class="ui-grid-responsive container-fluid">
+		<header class="container"><h:graphicImage library="devproject" name="images/logo2.png" alt="DevProject"/></header>
+			
+		<nav class="dp-menu">
+				<div class="dp-menubar">
+					<div class="container">
+						<div class="dp-btn-menu"><i class="fa fa-bars"/> Menu</div>
+					</div>
+				</div>
+				<ul class="ui-grid-row container">
+					<li><a id="buttonDevproject">O que é o DevProject?</a></li>
+					<li><a id="buttonCaracteristicas">Como funciona?</a></li>
+					<li><a id="buttonQuem">Quem somos?</a></li>
+				</ul>
+		</nav>
+			
+		<div class="container">
+			<div id="botoes-login" class="ui-grid-row container">
+			
+				<div class="ui-grid-col-6">
+					<div class="btn-fluid btn-black"><a href="login.xhtml" ><span>Login</span></a></div>
+				</div>
+				
+				<div class="ui-grid-col-6">
+					<div class="btn-fluid btn-black"><a href="cadastrar-usuario.xhtml" ><span>Cadastre-se</span></a></div>
+				</div>
+				
+			</div>
+		</div>
+		
+		<div class="container">
+			<div id="botoes-login" class="ui-grid-row container">
+			
+				<div class="ui-grid-col-6">
+					<div class="btn-fluid btn-black"><a href="projetos.xhtml" ><span>Visualizar projetos</span></a></div>
+				</div>
+				
+				<div class="ui-grid-col-6">
+					<div class="btn-fluid btn-black"><a href="usuarios.xhtml" ><span>Visualizar usuários</span></a></div>
+				</div>
+				
+			</div>
+		</div>
+		
+		<section class="conteudo">
+			<article class="ui-grid-row dp-topico cor1" id="devproject">
+			
+				<div class="container">
+					<div class="ui-grid-col-6 dp-topico-texto">
+						<h1>DevProject</h1>
+						<p>DevProject tem como objetivo aumentar a visibilidade dos desenvolvedores 
+						para que adquiram experiências para estar apto ao ambiente de trabalho. <br/>
+						Desenvolver habilidades é crucial para ampliar sua formação e compartilhar 
+						o conhecimento é fundamental para aumentar a qualidade de mão de obra na área de TI.</p>
+					</div>
+					
+					<div class="ui-grid-col-6 dp-topico-imagem">
+						<h:graphicImage library="devproject" name="images/imagem01.jpg" styleClass="dp-imagem-responsiva"/>
+					</div>
+				</div>
+				
+			</article>
+			
+			<div class="ui-grid-row dp-topico-duplo" id="caracteristicas">
+			
+				<div class="ui-grid-col-6 dp-topico cor2">
+					<article class="dp-topico-texto centraliza dp-right">
+							<h1><i class="fa fa-bar-chart icone-texto"/>Planejamento</h1>
+							<p>Planejamento é fundamental para o desenvolvimento de projetos.
+							 Manter a organização, trabalhar em equipe e utilizar metodologias ágeis
+							 são elementos chave para um projeto ser bem sucedido, então o DevProject
+							 irá auxiliar a aprimorar esses quesitos com o ambiente responsivo e organizado
+							 proporcionado pelo site.</p>
+					</article>
+				</div>
+				<div class="ui-grid-col-6 dp-topico cor3">					
+					<article class="dp-topico-texto centraliza dp-left">
+							<h1><i class="fa fa-terminal icone-texto"/>Open Source</h1>
+							<p>A utilização do sistema é completamente gratuita e poderá ser melhorada por
+							 outros programadores, assim disponibilizando uma ferramenta cada vez melhor e
+							  com menos problemas.</p>
+					</article>
+				</div>
+				
+			</div>
+			
+			<article class="ui-grid-row dp-topico cor4">
+			
+				<div class="container">
+					<div class="ui-grid-col-8 dp-topico-texto">
+						<h1><i class="fa fa-question-circle icone-texto"/>Como utilizar?</h1>
+						<p>Para começar a utilizar o sistema é necessário efetuar o seu cadastro. Após isso,
+						é só começar a utilizar para gerenciar seus projetos utilizando metodologia ágil, fazendo com que
+						seus projetos tornem-se mais eficazes e que se diminuam os problemas encontrados.</p>
+						<p>Com o nosso sistema, pode-se criar projetos, participar de outros projetos, acompanhar projetos 
+						e organizar os projetos, interagindo assim com outros usuários e aprendendo na participação desses projetos.</p>
+					</div>
+					<div class="ui-grid-col-4 dp-topico-imagem">
+						<h:graphicImage library="devproject" name="images/imagem02.jpg" styleClass="dp-imagem-responsiva"/>
+					</div>
+				</div>
+				
+			</article>
+			
+			<article class="ui-grid-row dp-topico cor5" id="quem">
+			
+				<div class="container imagem-esquerda">
+					<div class="ui-grid-col-8 dp-topico-texto">
+						<h1><i class="fa fa-user icone-texto"/>Quem somos?</h1>
+						<p>Somos um grupo de estudantes da instituição Faculdade de Tecnologia Rubens Lara em Santos que desenvolveu
+						este sistema com o objetivo de graduação em tecnologo em Análise e Desenvolvimento de Sistemas.</p>
+						<p>Nós somos:</p>
+						<ul style="margin-top:15px;font-size:1.2em;margin-left:2em;">
+							<li>Fernando Yukio Watanabe</li>
+							<li>Pedro Lopes Nusa</li>
+							<li>Nilson Nogueira Neto</li>
+							<li>Maurício Carneiro Siqueira</li>
+						</ul>
+					</div>
+					<div class="ui-grid-col-4 dp-topico-imagem">
+						<h:graphicImage library="devproject" name="images/imagem03.jpg" styleClass="dp-imagem-responsiva"/>
+					</div>
+				</div>
+			</article>
+			
+		</section>
+		
+		<footer>
+			<div class="container ui-grid-row">
+				<div class="ui-grid-col-7 dp-devproject-descricao">
+					<h2>DevProject</h2>
+					<p>Todos os direitos reservados &#169;</p>
+				</div>
+				<div class="ui-grid-col-5 dp-contato">
+					<h3>E-mail</h3>
+					<p>contato.devproject@devproject.com</p>
+					<h3>Skype</h3>
+					<p>atendimento.devproject</p>
+					<h3>Telefone</h3>
+					<p>(13)3365-1994:15</p>
+				</div>
+			</div>
+		</footer>
+	</div>
+</h:body>
+</html>

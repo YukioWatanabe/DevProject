@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/sistema/layout.xhtml">
+	<ui:define name="title">
+		DevProject - Editar Projeto
+	</ui:define>
+	<ui:define name="estilo"><h:outputStylesheet library="devproject" name="styles/cadastrar-projeto.css"/></ui:define>
+	<f:metadata>
+		<f:viewAction action="#{projeto.inicializarEdicao}"/>
+	</f:metadata>
+	<ui:define name="conteudo">
+		<h1 style="margin-bottom:30px;">Edição de Projeto</h1>
+	
+		<div class="ui-grid-col-2" style="margin-top:15px;">
+	    	<p:graphicImage value="#{imagens.imagemProjeto}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty projeto.usuarioProjeto.pk.projeto.logo}" style="max-width:300px; margin:0 auto;">
+		    	<f:param name="id" value="#{projeto.usuarioProjeto.pk.projeto.id}"/>
+		    </p:graphicImage>
+	    	<p:graphicImage library="devproject" name="images/projeto-semimagem.png" rendered="#{empty projeto.usuarioProjeto.pk.projeto.logo}"
+	    	styleClass="dp-imagem-responsiva dp-imagem-thumbnail" style="max-width:300px; margin:0 auto;"/>
+	    	<div class="btn-fluid btn-black" style="margin:10px 0;">
+	    		<a href="../projeto.xhtml?id=#{projeto.usuarioProjeto.pk.projeto.id}" ><span>Voltar</span></a>
+	    	</div>
+	    </div>
+		<h:form prependId="false" id="frm" enctype="multipart/form-data">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			
+		    <div class="ui-grid-col-10" style="margin-top:15px;padding:0 15px;">
+		    
+				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-7,ui-grid-col-5" styleClass="no-border ui-fluid" id="grid">
+			
+					<h:panelGroup>
+						<p:outputLabel value="Titulo do Projeto" id="tituloProjeto"/>
+						<p:inputText value="#{projeto.usuarioProjeto.pk.projeto.titulo}" maxlength="100" label="tituloProjeto"/>
+					</h:panelGroup>
+					<h:panelGroup>
+						<p:outputLabel value="Prazo de Término" id="prazo"/>
+						<p:calendar value="#{projeto.usuarioProjeto.pk.projeto.prazo}" label="prazo" mask="99/99/9999" 
+						mindate="#{projeto.dataAtual}" pattern="dd/MM/yyyy"/>
+					</h:panelGroup>
+					
+				</p:panelGrid>
+				
+				<p:outputLabel value="Descrição" id="descricao"/>
+				<div style="padding:10px;padding-right:20px;">
+					<p:inputTextarea id="sobre" cols="100" rows="10" label="descricao" style="clear:both; width:100%;" 
+					value="#{projeto.usuarioProjeto.pk.projeto.descricao}" maxlength="2000" counter="contador" counterTemplate="{0} caracteres restantes."/>
+					<p style="text-align:right;"><h:outputText id="contador"/></p>
+				</div>
+				
+				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-7,ui-grid-col-5" styleClass="no-border ui-fluid">
+					
+					<h:panelGroup>
+						<p:outputLabel for="habilidades" value="Habilidades"/><br/>
+						<p:selectCheckboxMenu id="habilidades" value="#{projeto.habilidadesProjeto}"
+											  converter="habilidade"
+											  filter="true" filterMatchMode="startsWith" scrollHeight="250" 
+											  showHeader="true" style="width:200px;margin:15px 0;">
+							<f:selectItems value="#{projeto.habilidades}" 
+										   var="habilidade" 
+										   itemLabel="#{habilidade.valor}" 
+										   itemValue="#{habilidade}"/>
+						    <p:ajax event="change" process="@this" global="false" update="tabela-habilidades"/>
+						</p:selectCheckboxMenu>
+					</h:panelGroup>
+					
+					<h:panelGroup>
+						<p:outputLabel for="tipo-projeto" value="Tipo do Projeto"/>
+						<p:selectOneMenu id="tipo-projeto" value="#{projeto.usuarioProjeto.pk.projeto.tipo}" style="margin-top:15px;">
+							<f:selectItems value="#{projeto.tipos}" 
+										   var="tipo" 
+										   itemLabel="#{tipo.descricao}" 
+										   itemValue="#{tipo}"/>
+						</p:selectOneMenu>
+					</h:panelGroup>
+					
+				</p:panelGrid>
+				
+				<div style="padding:0 10px;">
+						<p:outputLabel for="logo" value="Logo"/><br/>
+						<p:fileUpload id="logo" uploadLabel="Enviar" style="margin:15px 0;clear:both;" fileUploadListener="#{projeto.gravarLogo}" fileLimit="5242880" fileLimitMessage="Tamanho deve ser menor que 5MB"
+						value="#{projeto.usuarioProjeto.pk.projeto.logo}" cancelLabel="Cancelar" dragDropSupport="true" allowTypes="/(\.|\/)(jpe?g)$/"/>
+					
+					<p:toolbar>
+						<p:toolbarGroup align="left">
+							<p:commandButton value="Atualizar" icon="fa fa-refresh" update="tabela-habilidades" 
+							process="@this habilidades" global="false"/>
+						</p:toolbarGroup>
+						
+						<p:toolbarGroup align="right">
+							<p:commandButton value="Deletar" icon="fa fa-trash" action="#{projeto.deletarHabilidade}" 
+							update="tabela-habilidades habilidades" process="@this" global="false"/>
+						</p:toolbarGroup>
+					</p:toolbar>
+					
+					<p:dataTable paginator="true" selectionMode="multiple" rows="10" reflow="true" value="#{projeto.habilidadesProjeto}"
+							 var="habilidadeTable" rowKey="#{habilidadeTable.codigo}" id="tabela-habilidades"
+							 emptyMessage="Nenhuma habilidade selecionada" paginatorPosition="bottom" selection="#{projeto.habilidadeSelecionada}" >
+						<p:ajax event="rowSelect"/>
+						
+						<f:facet name="header">
+							Requisitos Selecionados
+						</f:facet>
+						<p:column width="50%" headerText="Codigo" sortable="true" sortBy="#{habilidadeTable.codigo}">
+							<h:outputText value="#{habilidadeTable.codigo}"/>
+						</p:column>
+						
+						<p:column width="50%" headerText="Habilidade" sortable="true" sortBy="#{habilidadeTable.valor}">
+							<h:outputText value="#{habilidadeTable.valor}"/>
+						</p:column>
+					</p:dataTable>
+					<div style="margin:30px 0;">
+						<p:selectBooleanCheckbox value="#{projeto.usuarioProjeto.pk.projeto.finalizado}" id="finalizado" style="margin-right:10px;"/>
+						<p:outputLabel value="Finalizado" for="finalizado"/>
+					</div>
+			
+					<p:commandButton value="Salvar" icon="fa fa-save" style="width:auto;margin-bottom:50px;" 
+					action="#{projeto.atualizar}"/>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/sistema/layout.xhtml">
+	<ui:define name="title">
+	    DevProject - Meu Perfil
+	</ui:define>
+	<f:metadata>
+		<f:viewAction action="#{usuario.inicializarEdicao}"/>
+	</f:metadata>
+	<ui:define name="estilo"><h:outputStylesheet library="devproject" name="styles/profile.css"/></ui:define>
+	<ui:define name="conteudo">
+	    <div class="ui-grid-row">
+	    
+	    	<div class="ui-grid-col-3">
+	    		<p:graphicImage value="#{imagens.imagemUsuario}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty usuario.usuario.foto}">
+		    		<f:param name="id" value="#{usuario.usuario.id}"/>
+		    	</p:graphicImage>
+			    <p:graphicImage library="devproject" name="images/semimagem.jpg" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{empty usuario.usuario.foto}"/>
+	    		<div class="btn-fluid btn-black" style="margin:15px 0;"><a href="../perfil.xhtml" ><span>Voltar</span></a></div>
+	    	</div>
+	    	<h:form id="frm" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		    	<div class="ui-grid-col-9 dp-texto-margem">
+		    		<h2>Informações pessoais</h2>
+		    		<div class="dp-tabela-informacao dp-paragrafo">
+		    			<div class="ui-grid-col-6">
+		    				<p><p:outputLabel value="Nome:" for="nome" id="nomeLabel"/></p>
+			    			<p><p:inputText id="nome" label="nomeLabel" value="#{usuario.usuario.nome}" 
+			    			maxlength="30" placeholder="Nome" required="true"/></p>
+			    		</div>
+			    		<div class="ui-grid-col-6">
+			    			<p><p:outputLabel value="Sobrenome:" for="sobrenome" id="sobrenomeLabel"/></p>
+			    			<p><p:inputText id="sobrenome" label="sobrenomeLabel" value="#{usuario.usuario.sobrenome}" 
+			    			maxlength="30" placeholder="Sobrenome" required="true"/></p>
+			    		</div>
+			    		<p><p:outputLabel value="Data de nascimento:" for="dataNascimento" id="dataNascimentoLabel"/></p>
+			    		<p><p:calendar id="dataNascimento" pattern="dd/MM/yyyy" mask="99/99/9999" value="#{usuario.usuario.dataNascimento}"
+									navigator="true" placeholder="Data de nascimento" required="true" 
+									maxdate="#{usuario.dataAtual}" label="dataNascimentoLabel" style="width:40%">
+							</p:calendar></p>
+			    		<p><p:outputLabel value="E-mail:" for="email" id="emailLabel"/> </p> 
+			    		<p><p:inputText id="email" label="emailLabel" value="#{usuario.usuario.email}" 
+			    		maxlength="40" placeholder="E-mail" required="true"/></p>
+		    		</div>
+	    			<h2>Contato</h2>
+		    		<div class="ui-grid-row dp-texto-margem dp-tabela-informacao">
+			    		<div class="ui-grid-col-6 dp-paragrafo">
+				    		<p><p:outputLabel value="Telefone residencial:" for="telefoneResidencial" id="telefoneResidencialLabel"/></p>
+				    		<p><p:inputMask id="telefoneResidencial" value="#{usuario.usuario.telefoneResidencial}" label="telefoneResidencialLabel" 
+				    		mask="(99) 9999-9999" placeholder="Telefone residencial"/></p>
+				    		<p><p:outputLabel value="Telefone comercial:" for="telefoneComercial" id="telefoneComercialLabel"/></p>
+				    		<p><p:inputMask id="telefoneComercial" value="#{usuario.usuario.telefoneComercial}" label="telefoneComercialLabel"
+				    		mask="(99) 9999-9999?:9999" placeholder="Telefone comercial"/></p>
+				    		<p><p:outputLabel value="Telefone celular:" for="telefoneCelular" id="telefoneCelularLabel"/></p> 
+				    		<p><p:inputMask id="telefoneCelular" value="#{usuario.usuario.celular}" label="telefoneComercialLabel" 
+				    		mask="(99) 9999-9999?9" placeholder="Telefone celular"/></p>
+			    		</div>
+			    		<div class="ui-grid-col-6 dp-paragrafo">
+				    		<p><p:outputLabel value="Linked In:" for="linkedin" id="linkedinLabel"/></p> 
+				    		<p><p:inputText id="linkedin" value="#{usuario.usuario.linkedin}" label="linkedinLabel" 
+				    		placeholder="Linked In" maxlength="50"/></p>
+				    		<p><p:outputLabel value="Skype:" for="skype" id="skypeLabel"/></p> 
+				    		<p><p:inputText id="skype" value="#{usuario.usuario.skype}" label="skypeLabel" 
+				    		placeholder="Skype" maxlength="50"/></p>
+				    		<p><p:outputLabel value="Facebook:" for="facebook" id="facebookLabel"/></p>
+				    		<p><p:inputText id="facebook" value="#{usuario.usuario.facebook}" label="facebookLabel" 
+				    		placeholder="Facebook" maxlength="50"/></p>
+			    		</div>
+		    		</div>
+					<h2>Sobre</h2>
+					<div class="dp-paragrafo dp-tabela-informacao">
+						<p><p:inputTextarea id="sobre" cols="100" rows="10" 
+						value="#{usuario.usuario.sobre}" maxlength="500" 
+						counter="contador" counterTemplate="{0} caracteres restantes." placeholder="Sobre você"/></p>
+						<br/><p style="font-weight:normal;"><h:outputText id="contador"/></p>
+					</div>
+					<h2>Foto</h2>
+					<div class="ui-grid-row dp-texto-margem dp-tabela-informacao">
+						<div class="ui-grid-col-12 dp-paragrafo">
+							<p><p:fileUpload id="foto" uploadLabel="Enviar" fileUploadListener="#{usuario.gravarFoto}" fileLimit="5242880" fileLimitMessage="Tamanho deve ser menor que 5MB"
+							value="#{usuario.usuario.foto}" cancelLabel="Cancelar" dragDropSupport="true" allowTypes="/(\.|\/)(jpe?g)$/"/></p>
+				    	</div>
+			    	</div>
+					<h2>Habilidades</h2>
+					
+					<p:selectCheckboxMenu id="habilidades" value="#{usuario.habilidadesDoUsuario}" label="Habilidades" 
+										  converter="habilidade"
+										  filter="true" filterMatchMode="startsWith" scrollHeight="250" styleClass="componentes-habilidades">
+						<f:selectItems value="#{usuario.habilidades}" 
+									   var="habilidade" 
+									   itemLabel="#{habilidade.valor}" 
+									   itemValue="#{habilidade}"/>
+					   <p:ajax event="change" process="@this" global="false" update="tabela-habilidades"/>
+					</p:selectCheckboxMenu>
+					
+					<p:toolbar styleClass="componentes-habilidades">
+						<p:toolbarGroup align="left">
+							<p:commandButton value="Atualizar" icon="fa fa-refresh" update="tabela-habilidades" 
+							process="@this habilidades" global="false"/>
+						</p:toolbarGroup>
+						
+						<p:toolbarGroup align="right">
+							<p:commandButton value="Deletar" icon="fa fa-trash" action="#{usuario.deletarHabilidade}" 
+							update="tabela-habilidades habilidades" process="@this" global="false"/>
+						</p:toolbarGroup>
+					</p:toolbar>
+									
+			    	<p:dataTable paginator="true" selectionMode="multiple" rows="10" reflow="true" value="#{usuario.habilidadesDoUsuario}"
+							 var="habilidadeTable" rowKey="#{habilidadeTable.codigo}" id="tabela-habilidades" 
+							 emptyMessage="Nenhuma habilidade selecionada" paginatorPosition="bottom" 
+							 selection="#{usuario.habilidadeSelecionada}">
+						<p:ajax event="rowSelect"/>
+						
+						<f:facet name="header">
+							Habilidades
+						</f:facet>
+						<p:column width="50%" headerText="Codigo" sortable="true" sortBy="#{habilidadeTable.codigo}">
+							<h:outputText value="#{habilidadeTable.codigo}"/>
+						</p:column>
+						
+						<p:column width="50%" headerText="Habilidade" sortable="true" sortBy="#{habilidadeTable.valor}">
+							<h:outputText value="#{habilidadeTable.valor}"/>
+						</p:column>
+					</p:dataTable>
+					<p:commandButton action="#{usuario.salvar}" value="Salvar" icon="fa fa-save" style="margin-left:35px; margin-top:20px;" update="frm"/>
+		    	</div>
+	    	</h:form>
+	    </div>
+	    
+	</ui:define>
+</ui:composition>
+</html>

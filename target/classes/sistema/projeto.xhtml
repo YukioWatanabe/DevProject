@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="layout.xhtml">
+	<f:metadata>
+		<f:viewAction action="#{projeto.inicializarVisualizacao}"/>
+	</f:metadata>
+	<ui:define name="title">
+		DevProject - <h:outputText value="#{projeto.usuarioProjeto.pk.projeto.titulo}"/>
+	</ui:define>
+	<ui:define name="estilo"><h:outputStylesheet library="devproject" name="styles/projeto.css"/></ui:define>
+	<ui:define name="conteudo">
+	
+		<div class="ui-grid-col-2" style="margin-top:15px;">
+			<p:graphicImage value="#{imagens.imagemProjeto}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty projeto.usuarioProjeto.pk.projeto.logo}" style="max-width:300px; margin:0 auto;">
+		    	<f:param name="id" value="#{projeto.usuarioProjeto.pk.projeto.id}"/>
+		    </p:graphicImage>
+	    	<p:graphicImage library="devproject" name="images/projeto-semimagem.png" rendered="#{empty projeto.usuarioProjeto.pk.projeto.logo}"
+	    	styleClass="dp-imagem-responsiva dp-imagem-thumbnail" style="max-width:300px; margin:0 auto;"/>
+	    	<f:verbatim rendered="#{projeto.permitidoProjeto}">
+		    	<div class="btn-fluid btn-black" style="margin:10px 0;">
+		    		<a href="projeto/editar-projeto.xhtml?id=#{projeto.usuarioProjeto.pk.projeto.id}" >
+		    			<span>Editar</span>
+		    		</a>
+		    	</div>
+	    	</f:verbatim>
+	    </div>
+	    
+	    <div class="ui-grid-col-10" style="margin-top:15px;padding: 0 20px;">
+
+			<h1 style="margin-bottom:30px;"><h:outputText value="#{projeto.usuarioProjeto.pk.projeto.titulo}"/></h1>
+			
+			<h:form id="frm2" rendered="#{projeto.usuarioProjeto.pk.usuario == null}" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				<p:commandButton id="btn-solicitar-projeto" action="#{projeto.mostrarDialogProjeto}" value="#{projeto.jaSolicitou ? 'Solicitação enviada' : 'Solicitar participação'}" 
+				oncomplete="PF('dlgProjeto').show();" update="dialog-projeto" disabled="#{projeto.jaSolicitou}"/>
+			</h:form>
+			
+			<h:form rendered="#{projeto.permitidoProjeto}" prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				<p:commandButton id="btn-finalizar-projeto" action="#{projeto.finalizarProjeto}" 
+				value="#{projeto.usuarioProjeto.pk.projeto.finalizado ? 'Finalizado' : 'Finalizar projeto'}" disabled="#{projeto.usuarioProjeto.pk.projeto.finalizado}">
+					<p:confirm header="Confirmação de finalização" message="Deseja mesmo finalizar o projeto?" icon="ui-icon-alert" />
+				</p:commandButton>
+				<p:commandButton id="btn-sair" action="#{projeto.sairDoProjeto}" 
+				value="Sair do projeto" rendered="#{projeto.usuarioProjeto.funcao.descricao != 'Criador'}">
+					<p:confirm header="Confirmação de saída" message="Deseja mesmo sair do projeto?" icon="ui-icon-alert" />
+				</p:commandButton>
+			</h:form>
+			
+			<div class="ui-grid-row" style="margin:30px 0;">
+		    	<p class="ui-grid-col-6">Prazo: 
+		    	<h:outputText value="#{projeto.usuarioProjeto.pk.projeto.prazo != '' ? projeto.usuarioProjeto.pk.projeto.prazo : 'N/A'}">
+          		    <f:convertDateTime pattern="dd/MM/yyyy" />
+		    	</h:outputText>
+		    	</p>
+	
+		    	<p class="ui-grid-col-6">Tipo: <h:outputText value="#{projeto.usuarioProjeto.pk.projeto.tipo.descricao}"/></p>
+	    	</div>
+	    	
+	    	<h3 style="margin-top:30px;margin-bottom:15px;">Descrição</h3>
+	    	<p style="text-indent: 2em;line-height: 1.5em;">
+	    		<h:outputText value="#{projeto.usuarioProjeto.pk.projeto.descricao != '' ? projeto.usuarioProjeto.pk.projeto.descricao : 'Não possui descrição'}"/>
+	    	</p>
+	    	
+	    	<h3 style="margin-top:30px;margin-bottom:15px;">Requisitos</h3>
+	    	<ul id="requisitos" style="margin-bottom:30px;">
+    			<li><h:outputText value="Não possui requisitos cadastrados" rendered="#{empty projeto.usuarioProjeto.pk.projeto.requisitos}"/></li>
+	    		<ui:repeat value="#{projeto.usuarioProjeto.pk.projeto.requisitos}" var="requisito">
+	    			<li><h:outputText value="#{requisito.valor}"/></li>
+	    		</ui:repeat>
+	    	</ul>
+			<p:toolbar rendered="#{projeto.usuarioProjeto.pk.usuario != null}">
+				<p:toolbarGroup rendered="#{projeto.permitidoIteracao and not projeto.usuarioProjeto.pk.projeto.finalizado}">
+					<p:button value="Nova" icon="fa fa-asterisk" 
+					outcome="/sistema/iteracao/nova-iteracao.xhtml?idproj=#{projeto.usuarioProjeto.pk.projeto.id}"/>
+					<p:separator rendered="#{projeto.permitidoIteracao}"/>
+					<p:commandButton icon="fa fa-pencil" action="#{projeto.editarIteracao}" id="btn-editar"/>
+					<p:commandButton icon="fa fa-trash" action="#{projeto.deletarIteracao}" update="tabela-iteracoes">
+						<p:confirm header="Confirmação de exclusão" message="Deseja mesmo excluir essa iteração?" icon="ui-icon-alert" />
+					</p:commandButton>
+				</p:toolbarGroup>
+				
+				<p:toolbarGroup align="right">
+					<p:commandButton value="Ver" icon="fa fa-eye" action="#{projeto.verIteracao}" id="btn-ver"/>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<h:form prependId="false" rendered="#{projeto.usuarioProjeto.pk.usuario != null}">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				<p:dataTable paginator="true" selectionMode="single" rows="10" reflow="true" value="#{projeto.usuarioProjeto.pk.projeto.iteracoes}"
+						 var="iteracaoBusca" rowKey="#{iteracaoBusca.id}" id="tabela-iteracoes" paginatorPosition="bottom"
+						 emptyMessage="Nenhuma iteração cadastrada" style="margin-bottom:50px;"
+						 selection="#{projeto.iteracaoSelecionada}">
+					<p:ajax event="rowSelect" update="btn-ver btn-editar"/>
+					
+					<f:facet name="header">
+						Iterações
+					</f:facet>
+					<p:column width="10%" headerText="Id" sortable="true" sortBy="#{iteracaoBusca.id}">
+						<h:outputText value="#{iteracaoBusca.id}"/>
+					</p:column>
+					
+					<p:column width="40%" headerText="Titulo" sortable="true" sortBy="#{iteracaoBusca.titulo}">
+						<h:outputText value="#{iteracaoBusca.titulo}"/>
+					</p:column>
+					
+					<p:column width="20%" headerText="Data de inicio" sortable="true" sortBy="#{iteracaoBusca.dataInicio}">
+						<h:outputText value="#{iteracaoBusca.dataInicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column width="20%" headerText="Data final" sortable="true" sortBy="#{iteracaoBusca.dataFim}">
+						<h:outputText value="#{iteracaoBusca.dataFim}">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column width="10%" headerText="Finalizada" sortable="true" sortBy="#{iteracaoBusca.finalizada}">
+						<h:outputText value="#{iteracaoBusca.finalizada ? 'Sim' : 'Não'}"/>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+			
+			<p:toolbar rendered="#{projeto.permitidoProjeto and not projeto.usuarioProjeto.pk.projeto.finalizado}">
+				<p:toolbarGroup>
+					<p:commandButton action="#{projeto.mostrarDialogAdicionar}" value="Adicionar" icon="fa fa-user-plus" id="btn-novo-participante" rendered="#{projeto.permitidoProjeto}" oncomplete="PF('dlgAdicionar').show();" update="dialog-adicionar"/>
+				</p:toolbarGroup>
+			</p:toolbar>
+			
+			<h:form prependId="false">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				<p:dataTable paginator="true" selectionMode="single" rows="10" reflow="true" value="#{projeto.usuariosDoProjeto}"
+						 var="usuarioBusca" rowKey="#{usuarioBusca.pk}" id="tabela-participantes" paginatorPosition="bottom"
+						 emptyMessage="Nenhum participante"
+						 selection="#{projeto.usuarioSelecionado}" style="margin-bottom:50px;">
+					<p:ajax event="rowSelect" update="btn-ver-participante btn-editar-participante"/>
+					
+					<f:facet name="header">
+						Participantes
+					</f:facet>
+					<p:column width="10%" headerText="Id" sortable="true" sortBy="#{usuarioBusca.pk.usuario.id}">
+						<h:outputText value="#{usuarioBusca.pk.usuario.id}"/>
+					</p:column>
+					
+					<p:column width="50%" headerText="Nome" sortable="true" sortBy="#{usuarioBusca.pk.usuario.nome}">
+						<h:outputText value="#{usuarioBusca.pk.usuario.nome} #{usuarioBusca.pk.usuario.sobrenome}"/>
+					</p:column>
+					
+					<p:column width="20%" headerText="Função" sortable="true" sortBy="#{usuarioBusca.funcao.descricao}">
+						<h:outputText value="#{usuarioBusca.funcao.descricao}"/>
+					</p:column>
+					
+					<p:column width="20%" headerText="Ações" styleClass="center-list">
+						<p:commandButton icon="fa fa-pencil" action="#{projeto.mostrarDialogUsuario}" id="btn-editar-participante" rendered="#{projeto.permitidoProjeto == true and usuarioBusca.funcao.descricao != 'Criador' and usuarioBusca.pk.usuario != projeto.usuario}" oncomplete="PF('dlgUsuario').show();" update="dialog-usuario">
+							<f:param name="id" value="#{usuarioBusca.pk.usuario.id}"/>
+						</p:commandButton>
+						<p:commandButton icon="fa fa-ban" action="#{projeto.banirUsuario}" update="tabela-participantes" rendered="#{projeto.permitidoProjeto == true and usuarioBusca.funcao.descricao != 'Criador' and usuarioBusca.pk.usuario != projeto.usuario}">
+							<f:param name="id" value="#{usuarioBusca.pk.usuario.id}"/>
+							<p:confirm header="Confirmação de banimento" message="Deseja mesmo banir esse usuário?" icon="ui-icon-alert" />
+						</p:commandButton>
+						<p:commandButton icon="fa fa-eye" action="#{projeto.verPerfilParticipante}" id="btn-ver-participante">
+							<f:param name="id" value="#{usuarioBusca.pk.usuario.id}"/>
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+	    </div>
+	    <h:form prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		    <p:dialog closeOnEscape="true" draggable="false" modal="true" showEffect="fade" widgetVar="dlgUsuario" id="dialog-usuario"
+		    hideEffect="fade" fitViewport="true" resizable="false" responsive="true" header="Editar Função do Usuário">
+				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-4,ui-grid-col-8" styleClass="ui-grid">
+					<h:outputText value="Usuario: "/><h:outputText value="#{projeto.usuarioSelecionado.pk.usuario.nome} #{projeto.usuarioSelecionado.pk.usuario.sobrenome}"/>
+					<p:outputLabel value="Função: " for="funcao-usuario"/>
+					<p:selectOneMenu id="funcao-usuario" value="#{projeto.usuarioSelecionado.funcao}" converter="funcao">
+						<f:selectItems value="#{projeto.funcoes}" 
+									   var="funcaoProjeto" 
+									   itemLabel="#{funcaoProjeto.descricao}" 
+									   itemValue="#{funcaoProjeto}"/>
+					</p:selectOneMenu>
+				</p:panelGrid>
+		    	<f:facet name="footer">
+		    		<p:commandButton value="Salvar" icon="fa fa-send" action="#{projeto.editarPermissao}" 
+		    		oncomplete="PF('dlgUsuario').hide();" process="@this dialog-usuario" update="tabela-participantes"/>
+		    	</f:facet>
+		    </p:dialog>
+	    </h:form>
+	    <h:form prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		    <p:dialog closeOnEscape="true" draggable="false" modal="true" showEffect="fade" widgetVar="dlgProjeto" id="dialog-projeto"
+		    hideEffect="fade" fitViewport="true" resizable="false" responsive="true" header="Solicitação de Participação">
+				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" styleClass="ui-grid">
+					<h:outputLabel value="Projeto: "/><h:outputText value="#{projeto.solicitacaoProjeto.pk.receptor.titulo}"/>
+					<p:outputLabel value="Função: " for="funcao-projeto"/>
+					<p:selectOneMenu id="funcao-projeto" value="#{projeto.solicitacaoProjeto.funcao}" converter="funcao">
+						<f:selectItems value="#{projetos.funcoes}" 
+									   var="funcaoProjeto" 
+									   itemLabel="#{funcaoProjeto.descricao}" 
+									   itemValue="#{funcaoProjeto}"/>
+					</p:selectOneMenu>
+				</p:panelGrid>
+				<p:outputLabel value="Mensagem" for="mensagem"/>
+				<p:inputTextarea id="mensagem" cols="50" rows="5" style="clear:both; width:100%;" 
+				value="#{projeto.solicitacaoProjeto.mensagem}" maxlength="150" counter="contador1" counterTemplate="{0} caracteres restantes."/>
+				<p style="text-align:right;"><h:outputText id="contador1"/></p>
+		    	<f:facet name="footer">
+		    		<p:commandButton value="Enviar" icon="fa fa-send" action="#{projeto.solicitarParticipacao}" 
+		    		oncomplete="PF('dlgProjeto').hide();" process="@this dialog-projeto" update="btn-solicitar-projeto"/>
+		    	</f:facet>
+		    </p:dialog>
+	    </h:form>
+	    <h:form prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		    <p:dialog closeOnEscape="true" draggable="false" modal="true" showEffect="fade" widgetVar="dlgAdicionar" id="dialog-adicionar"
+		    hideEffect="fade" fitViewport="true" resizable="false" responsive="true" header="Adicionar participantes">
+				<ul style="margin:15px 0;">
+					<li>
+						<h:outputLabel value="Usuário: "/><h:outputText value="#{projeto.solicitacaoNovoParticipante.pk.receptor.nome} #{projeto.solicitacaoNovoParticipante.pk.receptor.sobrenome}" id="usuario-adicionado"/>
+					</li>
+					<li>
+						<p:outputLabel value="Função: " for="funcao-novo-participante"/>
+						<p:selectOneMenu id="funcao-novo-participante" value="#{projeto.solicitacaoNovoParticipante.funcao}" converter="funcao">
+							<f:selectItems value="#{projetos.funcoes}" 
+										   var="funcaoProjeto" 
+										   itemLabel="#{funcaoProjeto.descricao}" 
+										   itemValue="#{funcaoProjeto}"/>
+						</p:selectOneMenu>
+					</li>
+				</ul>
+				
+				<p:panelGrid layout="grid" columns="1" styleClass="ui-grid no-border">
+					<p:outputLabel value="Mensagem" for="mensagem-novo-participante" style="clear:both;"/>
+					<h:panelGroup style="margin-right:10px;clear:both;" styleClass="ui-grid-col-6">
+						<p:inputTextarea id="mensagem-novo-participante" cols="50" rows="5" style="clear:both;width:100%;" 
+						value="#{projeto.solicitacaoNovoParticipante.mensagem}" maxlength="150" counter="contador2" counterTemplate="{0} caracteres restantes."/>
+						<p style="text-align:right;"><h:outputText id="contador2"/></p>
+					</h:panelGroup>
+				</p:panelGrid>
+				
+				<p:toolbar style="padding: 5px;margin-top:30px;">
+				
+					<p:toolbarGroup style="width:100%;">
+						<p:inputText value="#{projeto.busca}" placeholder="Busca" style="width:30%;">
+							<p:ajax process="@this" listener="#{projeto.pesquisar}" event="keyup" update="tabela-usuarios"/>
+						</p:inputText>
+						<p:commandButton id="pesquisar" action="#{projeto.pesquisar}" value="Pesquisar" icon="fa fa-search" update="tabela-usuarios" widgetVar="pesquisar"/>
+					</p:toolbarGroup>
+					
+					<p:toolbarGroup style="clear:both;">
+						<p:selectCheckboxMenu id="habilidades" value="#{projeto.habilidadesSelecionadas}" label="Habilidades" 
+											  converter="habilidade"
+											  filter="true" filterMatchMode="startsWith" scrollHeight="250" style="clear:both; width:300px;">
+							<f:selectItems value="#{projeto.habilidades}" 
+										   var="habilidade" 
+										   itemLabel="#{habilidade.valor}" 
+										   itemValue="#{habilidade}"/>
+						   <p:ajax event="change" process="@this" global="false"/>
+						</p:selectCheckboxMenu>
+					</p:toolbarGroup>
+				</p:toolbar>
+				
+				<p:dataTable paginator="true" selectionMode="single" rows="10" reflow="true" value="#{projeto.usuariosDisponiveis}"
+						 var="usuarioBusca" rowKey="#{usuarioBusca.id}" id="tabela-usuarios" paginatorPosition="bottom"
+						 emptyMessage="Nenhum usuário disponível"
+						 selection="#{projeto.solicitacaoNovoParticipante.pk.receptor}" style="margin-bottom:30px;">
+					<p:ajax event="rowSelect" update="usuario-adicionado"/>
+					
+					<f:facet name="header">
+						Usuários
+					</f:facet>
+					<p:column width="10%" headerText="Id" sortable="true" sortBy="#{usuarioBusca.id}">
+						<h:outputText value="#{usuarioBusca.id}"/>
+					</p:column>
+					
+					<p:column width="70%" headerText="Nome" sortable="true" sortBy="#{usuarioBusca.nome}">
+						<h:outputText value="#{usuarioBusca.nome} #{usuarioBusca.sobrenome}"/>
+					</p:column>
+					
+					<p:column width="20%" headerText="Ações" styleClass="center-list">
+						<p:commandButton icon="fa fa-eye" action="#{projeto.verPerfilParticipante}">
+							<f:param name="id" value="#{usuarioBusca.id}"/>
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+		    	<f:facet name="footer">
+		    		<p:commandButton value="Enviar" icon="fa fa-send" action="#{projeto.solicitarNovoParticipante}" 
+		    		oncomplete="PF('dlgAdicionar').hide();" process="@this dialog-adicionar"/>
+		    	</f:facet>
+		    </p:dialog>
+	    </h:form>
+	</ui:define>
+</ui:composition>
+</html>

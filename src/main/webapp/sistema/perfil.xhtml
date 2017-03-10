@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/sistema/layout.xhtml">
+	<ui:define name="title">
+	    DevProject - Meu Perfil
+	</ui:define>
+	<f:metadata>
+		<f:viewAction action="#{usuario.inicializarPerfil}"/>
+	</f:metadata>
+	<ui:define name="estilo"><h:outputStylesheet library="devproject" name="styles/profile.css"/></ui:define>
+	<ui:define name="conteudo">
+	    <div class="ui-grid-row">
+	    	
+	    	<div class="ui-grid-col-3">
+		    	<p:graphicImage value="#{imagens.imagemUsuario}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty usuario.usuario.foto}">
+		    		<f:param name="id" value="#{usuario.usuario.id}"/>
+		    	</p:graphicImage>
+			    <p:graphicImage library="devproject" name="images/semimagem.jpg" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{empty usuario.usuario.foto}"/>
+	    		<f:verbatim rendered="#{usuario.usuario == usuario.usuarioLogado}">
+	    			<div class="btn-fluid btn-black" style="margin:15px 0;"><a href="perfil/editar-perfil.xhtml" ><span>Editar</span></a></div>
+	    		</f:verbatim>
+	    	</div>
+	    	
+	    	<div class="ui-grid-col-9 dp-texto-margem">
+	    		<h1 class="destaque-titulo-vermelho capitalize">#{usuario.usuario.nome} #{usuario.usuario.sobrenome}</h1>
+	    		
+	    		<h:form id="frm2" rendered="#{not usuario.jaAmigo and usuario.usuario != usuario.usuarioLogado}" prependId="false">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					<p:commandButton id="btn-solicitar-amizade" action="#{usuario.mostrarDialog}" 
+					value="#{usuario.jaSolicitou ? 'Solicitação enviada' : 'Solicitar amizade'}" oncomplete="PF('dlg').show();" 
+					update="dialog" disabled="#{usuario.jaSolicitou}" style="margin:20px 30px;"/>
+				</h:form>
+				
+	    		<div class="dp-tabela-informacao dp-paragrafo">
+		    		<p>Idade: </p>
+		    		<p><h:outputText value="#{usuario.usuario.dataNascimento}"><f:converter converterId="idade"/></h:outputText></p>
+		    		<p>E-mail: </p> 
+		    		<p>#{usuario.usuario.email}</p>
+	    		</div>
+    			<h2>Contato</h2>
+	    		<div class="ui-grid-row dp-texto-margem dp-tabela-informacao">
+		    		<div class="ui-grid-col-6 dp-paragrafo">
+			    		<p>Telefone residencial: </p>
+			    		<p>#{usuario.usuario.telefoneResidencial != "" ? usuario.usuario.telefoneResidencial : 'Não informado'}</p>
+			    		<p>Telefone comercial: </p>
+			    		<p>#{usuario.usuario.telefoneComercial != "" ? usuario.usuario.telefoneComercial : 'Não informado'}</p>
+			    		<p>Telefone celular:</p> 
+			    		<p>#{usuario.usuario.celular != "" ? usuario.usuario.celular : 'Não informado'}</p>
+		    		</div>
+		    		<div class="ui-grid-col-6 dp-paragrafo">
+			    		<p>Linked In:</p> 
+			    		<p><a href="#{usuario.usuario.linkedin}">#{usuario.usuario.linkedin != "" ? 'Linked In' : 'Não informado'}</a></p>
+			    		<p>Skype:</p> 
+			    		<p>#{usuario.usuario.skype != "" ? usuario.usuario.skype : 'Não informado'}</p>
+			    		<p>Facebook:</p>
+			    		<p><a href="#{usuario.usuario.facebook}">#{usuario.usuario.facebook != "" ? 'Facebook do '.concat(usuario.usuario.nome) : 'Não informado'}</a></p>
+		    		</div>
+	    		</div>
+				<h2>Sobre </h2>
+				<p id="sobre" class="dp-paragrafo dp-tabela-informacao" style="padding:20px 30px; word-break:break-all;">
+					#{usuario.usuario.sobre != "" ? usuario.usuario.sobre : 'Não informado'}
+				</p>
+				<h2>Habilidades</h2>
+		    	<p:dataTable paginator="true" rows="10" reflow="true" value="#{usuario.usuario.habilidades}"
+						 var="habilidadeTable" rowKey="#{habilidadeTable.codigo}" id="tabela-habilidades" 
+						 emptyMessage="Nenhuma habilidade selecionada" paginatorPosition="bottom">
+					<p:ajax event="rowSelect"/>
+					
+					<f:facet name="header">
+						Habilidades
+					</f:facet>
+					<p:column width="50%" headerText="Codigo" sortable="true" sortBy="#{habilidadeTable.codigo}">
+						<h:outputText value="#{habilidadeTable.codigo}"/>
+					</p:column>
+					
+					<p:column width="50%" headerText="Habilidade" sortable="true" sortBy="#{habilidadeTable.valor}">
+						<h:outputText value="#{habilidadeTable.valor}"/>
+					</p:column>
+				</p:dataTable>	
+	    	</div>
+	    </div>
+	    <h:form prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		    <p:dialog closeOnEscape="true" draggable="false" modal="true" showEffect="fade" widgetVar="dlg" id="dialog"
+		    hideEffect="fade" fitViewport="true" resizable="false" responsive="true" header="Solicitação de Amizade">
+				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-2,ui-grid-col-10" styleClass="ui-grid">
+					<h:outputText value="Usuário: "/><h:outputText value="#{usuario.solicitacao.pk.receptor.nome}"/>
+				</p:panelGrid>
+				<p:outputLabel value="Mensagem" for="mensagem"/>
+				<p:inputTextarea id="mensagem" cols="50" rows="5" style="clear:both; width:100%;" 
+				value="#{usuario.solicitacao.mensagem}" maxlength="150" counter="contador" counterTemplate="{0} caracteres restantes."/>
+				<p style="text-align:right;"><h:outputText id="contador"/></p>
+		    	<f:facet name="footer">
+		    		<p:commandButton value="Enviar" icon="fa fa-send" action="#{usuario.solicitarAmizade}" 
+		    		oncomplete="PF('dlg').hide();" process="@this dialog" update="btn-solicitar-amizade"/>
+		    	</f:facet>
+		    </p:dialog>
+	    </h:form>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="layout.xhtml">
+	<ui:define name="title">DevProject - Minhas Tarefas</ui:define>
+	<ui:define name="estilo">
+	    <h:outputStylesheet library="devproject" name="styles/usuarios.css"/>
+	</ui:define>
+	<ui:define name="conteudo">
+		
+		<f:metadata>
+			<f:viewAction action="#{tarefas.inicializar}"/>
+		</f:metadata>
+		
+		<h:form prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			<p:toolbar style="padding: 5px;">
+				
+				<p:toolbarGroup styleClass="barra-pesquisa">
+					<p:inputText value="#{tarefas.busca}" placeholder="Busca">
+						<p:ajax process="@this" listener="#{tarefas.pesquisar}" event="keyup" update="listaTarefas"/>
+					</p:inputText>
+					<p:commandButton id="pesquisar" action="#{tarefas.pesquisar}" value="Pesquisar" icon="fa fa-search" 
+					update="listaTarefas" widgetVar="pesquisar"/>
+				</p:toolbarGroup>
+				
+				<p:toolbarGroup style="clear:both;margin-top:15px;">
+					<p:selectBooleanCheckbox value="#{tarefas.apenasParticipantes}" id="apenasParticipantes"/>
+					<p:outputLabel value="Apenas minhas tarefas" for="apenasParticipantes" style="margin-left:15px;"/>
+				</p:toolbarGroup>
+				
+			</p:toolbar>
+		</h:form>
+		
+		<p:dataList value="#{tarefas.tarefasBusca}" var="tarefaBusca" type="unordered" itemType="none" paginator="true" rows="10" 
+		varStatus="index" emptyMessage="Sem resultado" id="listaTarefas">
+	        
+	        <f:facet name="header">Tarefas</f:facet>
+	       	
+	       	<p:panel header="#{tarefaBusca.titulo}" toggleable="true" toggleSpeed="300" widgetVar="panel#{index}" styleClass="ui-grid-row">
+	       		
+	       		<div class="ui-grid-col-9" style="margin:30px 0;">
+		       		
+		       		<h3 style="margin:15px 0;">Sobre</h3>
+					<h:outputText value="#{not empty tarefaBusca.descricaoTarefa ? tarefaBusca.descricaoTarefa : 'Descrição não disponível'}" style="word-break:break-all; margin-left:15px;"/>
+					
+					<div class="ui-grid-row">
+						<p class="campo-form ui-grid-col-6">Data inicio: <span><h:outputText value="#{tarefaBusca.dataInicio}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText></span>
+						</p>
+						<p class="campo-form ui-grid-col-6">Prazo: <span><h:outputText value="#{tarefaBusca.prazoTermino}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText></span>
+						</p>
+						<p class="campo-form ui-grid-col-6">Tempo estimado: <span><h:outputText value="#{tarefaBusca.tempoEstimado}"><f:convertDateTime pattern="HH:mm"/></h:outputText></span>
+						</p>
+						<p class="campo-form ui-grid-col-6">Tempo feito: <span><h:outputText value="#{tarefaBusca.tempoFeito}"><f:convertDateTime pattern="HH:mm"/></h:outputText></span>
+						</p>
+						<p class="campo-form ui-grid-col-6">Etapa: <span><h:outputText value="#{tarefaBusca.etapa.descricao}"/></span>
+						</p>
+					</div>
+					
+					<h3 style="margin:15px 0;">Participantes</h3>
+					<h:outputText value="Nenhum participante" rendered="#{empty tarefaBusca.participantes}"/>
+					<ul class="lista-habilidades">
+						<ui:repeat value="#{tarefaBusca.participantes}" var="participante">
+							<li><h:outputText value="#{participante.nome} #{participante.sobrenome}"/></li>
+						</ui:repeat>
+					</ul>
+					
+					<p:commandButton action="#{tarefas.visualizarTarefa}" value="Visualizar tarefa" style="margin-top:15px;">
+						<f:param name="id" value="#{tarefaBusca.id}"/>
+					</p:commandButton>
+	       		</div>
+			</p:panel>
+	    </p:dataList>
+	</ui:define>
+</ui:composition>
+</html>

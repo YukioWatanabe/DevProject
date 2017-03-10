@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/sistema/layout.xhtml">
+	<ui:define name="title">
+		DevProject - Editar tarefa
+	</ui:define>
+	<ui:define name="conteudo">
+		<f:metadata>
+			<f:viewAction action="#{tarefa.inicializarEditar}"/>
+		</f:metadata>
+		<h1>Editar Tarefa</h1>
+		<h:form prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			<p:panelGrid layout="grid" columns="1" columnClasses="ui-grid-col-8" style="margin-top:30px;" styleClass="ui-fluid ui-grid-col-12 no-border">
+				<h:panelGroup>
+					<p:outputLabel value="Titulo" for="titulo"/>
+					<p:inputText id="titulo" value="#{tarefa.tarefa.titulo}" maxlength="100"/>
+				</h:panelGroup>
+				
+				<h:panelGroup>
+					<p:outputLabel value="Descrição" id="descricao"/>
+					<p:inputTextarea cols="100" rows="10" label="descricao" style="clear:both; width:100%;" 
+					value="#{tarefa.tarefa.descricaoTarefa}" maxlength="500" counter="contador" counterTemplate="{0} caracteres restantes."/>
+					<p style="text-align:right;"><h:outputText id="contador"/></p>
+				</h:panelGroup>
+				
+				<h:panelGroup id="group-problema">
+					<p:outputLabel value="Descrição do Problema" id="descricao-problema"/>
+					<p:inputTextarea id="problema" cols="100" rows="10" label="descricao-problema" style="clear:both; width:100%;" rendered="#{tarefa.tarefa.etapa.descricao == 'Bloqueada'}"
+					value="#{tarefa.tarefa.descricaoProblema}" maxlength="500" counter="contador-problema" counterTemplate="{0} caracteres restantes."/>
+					<p style="text-align:right;"><h:outputText id="contador-problema"/></p>
+				</h:panelGroup>
+			</p:panelGrid>
+			<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" style="margin-top:30px;clear:both;" 
+						 styleClass="ui-fluid no-border ui-grid-col-6">
+				<h:panelGroup>
+					<p:outputLabel value="Data de inicio" id="data-inicio"/>
+					<p:calendar value="#{tarefa.tarefa.dataInicio}" label="data-inicio" mask="99/99/9999" style="margin-top:15px;"
+					mindate="#{tarefa.dataAtual}" pattern="dd/MM/yyyy"/>
+				</h:panelGroup>
+				<h:panelGroup>
+					<p:outputLabel value="Prazo" id="prazo"/>
+					<p:calendar value="#{tarefa.tarefa.prazoTermino}" label="prazo" mask="99/99/9999" style="margin-top:15px;"
+					mindate="#{tarefa.dataAtual}" pattern="dd/MM/yyyy"/>
+				</h:panelGroup>
+				<h:panelGroup>
+					<p:outputLabel value="Tempo estimado" id="estimado"/>
+					<p:calendar value="#{tarefa.tarefa.tempoEstimado}" label="estimado" mask="99:99" style="margin-top:15px;"
+					 pattern="HH:mm" timeOnly="true"/>
+				</h:panelGroup>
+				<h:panelGroup>
+					<p:outputLabel value="Tempo feito" id="feito"/>
+					<p:calendar value="#{tarefa.tarefa.tempoFeito}" label="feito" mask="99:99" style="margin-top:15px;"
+					 pattern="HH:mm" timeOnly="true"/>
+				</h:panelGroup>
+			</p:panelGrid>
+			<p:panelGrid layout="grid" columns="1" columnClasses="ui-grid-col-6" styleClass="ui-fluid ui-grid-col-12 no-border" style="margin-bottom:30px;">
+				<h:panelGroup>
+					<p:outputLabel value="Etapa" id="etapa"/>
+					<p:selectOneMenu value="#{tarefa.tarefa.etapa}">
+						<f:selectItems value="#{tarefa.etapas}" 
+									   var="etapa" 
+									   itemLabel="#{etapa.descricao}" 
+									   itemValue="#{etapa}"/>
+						<p:ajax event="change" update="group-problema"/>
+					</p:selectOneMenu>
+				</h:panelGroup>
+			</p:panelGrid>
+			<div style="margin-top:15px;">
+				<p:pickList id="participantes" value="#{tarefa.dlUsuario}" var="participante" effect="fade"
+	                itemValue="#{participante}" itemLabel="#{participante.nome}" showSourceControls="true" showTargetControls="true" 
+	                showCheckbox="true" responsive="true" style="clear:both;"
+	                showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" converter="#{participanteConverter}">
+	 
+			        <f:facet name="sourceCaption">Disponíveis</f:facet>
+			        <f:facet name="targetCaption">Participantes</f:facet>
+			 		
+			 		<!-- Adicionar listener -->
+			        <p:ajax event="transfer"/>
+			        <p:ajax event="select"/>
+			        <p:ajax event="unselect"/>
+			        <p:ajax event="reorder"/>
+			 
+			        <p:column style="width:10%">
+			            <h:outputText />
+			        </p:column>
+			 
+			        <p:column style="width:90%;">
+			            <h:outputText value="#{participante.nome} #{participante.sobrenome}" />
+			        </p:column>
+			    </p:pickList>
+			</div>
+			<div style="margin:30px 0;width:100%;">
+		    	<p:commandButton value="Salvar" action="#{tarefa.alterar}" icon="fa fa-save" style="width:auto;"/>
+		    	<p:button value="Voltar" icon="fa fa-mail-reply-all" outcome="/sistema/iteracao.xhtml?id=#{tarefa.tarefa.iteracao.id}" 
+					  style="margin-left:20px;width:auto;"/>
+			</div>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

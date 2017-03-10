@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<f:facet name="first">
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta name="_csrf" content="${_csrf.token}"/>
+ 		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+ 		<link rel="icon" href="#{request.contextPath}/resources/devproject/images/favicon.png" type="image/x-icon" />
+	</f:facet>
+	<title>DevProject - Cadastro de Usuário</title>
+	<h:outputStylesheet library="devproject" name="styles/components.css"/>
+	<h:outputScript library="devproject" name="scripts/cadastrar-usuario.js"/>
+	<h:outputStylesheet library="devproject" name="styles/cadastrar-usuario.css"/>
+</h:head>
+
+<h:body>
+	<f:metadata>
+		<f:viewAction action="#{usuario.inicializarNovo}"/>
+	</f:metadata>
+	<div class="ui-grid-responsive container-fluid">
+	
+		<div class="dp-menu">
+			<a href="index.xhtml" class="btn-voltar"><i class="fa fa-mail-reply-all"/>Voltar para a tela inicial</a>
+		</div>
+		
+		<p:growl autoUpdate="true" life="5000"/>
+		
+		<div class="conteudo">
+			<h1>Cadastro de Usuário</h1>
+			<h:form id="frm" enctype="multipart/form-data">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					<p:tabView>
+					
+						<p:tab title="Dados Pessoais">
+							<p:panelGrid columns="4" layout="grid" styleClass="no-border ui-fluid dp-dados-grid"
+							columnClasses="ui-grid-col-2, ui-grid-col-4, ui-grid-col-2,ui-grid-col-4">
+							
+								<p:outputLabel for="nome" value="Nome"/>
+								<p:inputText id="nome" value="#{usuario.usuario.nome}" placeholder="Nome" required="true"/>
+								
+								<p:outputLabel for="sobrenome" value="Sobrenome"/>
+								<p:inputText id="sobrenome" value="#{usuario.usuario.sobrenome}" placeholder="Sobrenome" required="true"/>
+								
+								<p:outputLabel for="username" value="Username"/>
+								<p:inputText id="username" value="#{usuario.usuario.username}" placeholder="Username" required="true"/>
+								
+								<p:outputLabel for="email" value="E-mail"/>
+								<p:inputText id="email" value="#{usuario.usuario.email}" placeholder="E-mail" required="true"/>
+								
+								<p:outputLabel for="senha" value="Senha"/>
+								<p:password id="senha" placeholder="Senha" value="#{usuario.usuario.senha}"
+								feedback="true" weakLabel="Fraca" goodLabel="Boa" strongLabel="Forte"
+								promptLabel="Informe sua senha" match="confirmaSenha" required="true"/>
+								
+								<p:outputLabel for="confirmaSenha" value="Confirma senha"/>
+								<p:password id="confirmaSenha" placeholder="Confirma senha" required="true"/>
+								
+								<p:outputLabel for="dataNascimento" value="Data de nascimento"/>
+								<p:calendar id="dataNascimento" pattern="dd/MM/yyyy" mask="99/99/9999" value="#{usuario.usuario.dataNascimento}"
+								navigator="true" placeholder="Data de nascimento" required="true" maxdate="#{usuario.dataAtual}"/>
+								
+								<p:outputLabel for="foto" value="Foto"/>
+								<p:fileUpload id="foto" uploadLabel="Enviar" fileUploadListener="#{usuario.gravarFoto}" fileLimit="5242880" fileLimitMessage="Tamanho deve ser menor que 5MB"
+								value="#{usuario.usuario.foto}" cancelLabel="Cancelar" dragDropSupport="true" allowTypes="/(\.|\/)(jpe?g)$/"/>
+							</p:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Contato">
+							<p:panelGrid columns="4" layout="grid" styleClass="no-border ui-fluid dp-dados-grid"
+							columnClasses="ui-grid-col-2, ui-grid-col-4, ui-grid-col-2,ui-grid-col-4">
+							
+								<p:outputLabel for="telefone-residencial" value="Telefone residencial"/>
+								<p:inputMask id="telefone-residencial" value="#{usuario.usuario.telefoneResidencial}" 
+								placeholder="Telefone residencial" mask="(99)9999-9999"/>
+								
+								<p:outputLabel for="telefone-comercial" value="Telefone comercial"/>
+								<p:inputMask id="telefone-comercial" value="#{usuario.usuario.telefoneComercial}" placeholder="Telefone comercial" mask="(99)9999-9999"/>
+								
+								<p:outputLabel for="celular" value="Celular"/>
+								<p:inputMask id="celular" value="#{usuario.usuario.celular}" placeholder="Celular" mask="(99)9999-9999?9"/>
+								
+								<p:outputLabel for="skype" value="Skype"/>
+								<p:inputText id="skype" value="#{usuario.usuario.skype}" placeholder="Username Skype"/>
+								
+								<p:outputLabel for="facebook" value="Facebook"/>
+								<p:inputText id="facebook" value="#{usuario.usuario.facebook}" placeholder="Url Facebook"/>
+								
+								<p:outputLabel for="linkedin" value="LinkedIn"/>
+								<p:inputText id="linkedin" value="#{usuario.usuario.linkedin}" placeholder="Url LinkedIn"/>
+								
+							</p:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Sobre você">
+								<div class="dp-bloco ui-fluid">
+									<p:outputLabel for="sobre" value="Sobre você"/>
+									<p:inputTextarea id="sobre" cols="100" rows="10" 
+									value="#{usuario.usuario.sobre}" maxlength="500" counter="contador" counterTemplate="{0} caracteres restantes."/>
+									<h:outputText id="contador"/><br/>
+								</div>
+								<div class="dp-bloco">
+									<p:outputLabel for="habilidades" value="Habilidades"/><br/>
+									<p:selectCheckboxMenu id="habilidades" value="#{usuario.usuario.habilidades}" label="Habilidades" 
+														  converter="habilidade"
+														  filter="true" filterMatchMode="startsWith" scrollHeight="250" >
+										<f:selectItems value="#{usuario.habilidades}" 
+													   var="habilidade" 
+													   itemLabel="#{habilidade.valor}" 
+													   itemValue="#{habilidade}"/>
+									   <p:ajax event="change" process="@this" global="false" update="tabela-habilidades"/>
+									</p:selectCheckboxMenu>
+									
+									<p:toolbar>
+										<p:toolbarGroup align="left">
+											<p:commandButton value="Atualizar" icon="fa fa-refresh" update="tabela-habilidades" 
+											process="@this habilidades" global="false"/>
+										</p:toolbarGroup>
+										
+										<p:toolbarGroup align="right">
+											<p:commandButton value="Deletar" icon="fa fa-trash" action="#{usuario.deletarHabilidade}" 
+											update="tabela-habilidades habilidades" process="@this" global="false"/>
+										</p:toolbarGroup>
+									</p:toolbar>
+									
+									<p:dataTable paginator="true" selectionMode="multiple" rows="10" reflow="true" value="#{usuario.usuario.habilidades}"
+											 var="habilidadeTable" rowKey="#{habilidadeTable.codigo}" id="tabela-habilidades" 
+											 emptyMessage="Nenhuma habilidade selecionada" paginatorPosition="bottom" selection="#{usuario.habilidadeSelecionada}">
+										<p:ajax event="rowSelect"/>
+										
+										<f:facet name="header">
+											Habilidades Selecionadas
+										</f:facet>
+										<p:column width="50%" headerText="Codigo" sortable="true" sortBy="#{habilidadeTable.codigo}">
+											<h:outputText value="#{habilidadeTable.codigo}"/>
+										</p:column>
+										
+										<p:column width="50%" headerText="Habilidade" sortable="true" sortBy="#{habilidadeTable.valor}">
+											<h:outputText value="#{habilidadeTable.valor}"/>
+										</p:column>
+									</p:dataTable>
+								</div>
+							<div class="dp-bar">
+								<p:commandButton value="Enviar" action="#{usuario.cadastrar}" icon="fa fa-send" styleClass="enviar" update="frm"/>	
+							</div>
+						</p:tab>
+						
+					</p:tabView>
+			</h:form>
+		</div>
+		
+		<footer>
+			<div class="container ui-grid-row">
+				<div class="ui-grid-col-7 dp-devproject-descricao">
+					<h2>DevProject</h2>
+					<p>Todos os direitos reservados &#169;</p>
+				</div>
+				<div class="ui-grid-col-5 dp-contato">
+					<h3>E-mail</h3>
+					<p>contato.devproject@devproject.com</p>
+					<h3>Skype</h3>
+					<p>atendimento.devproject</p>
+					<h3>Telefone</h3>
+					<p>(13)3365-1994:15</p>
+				</div>
+			</div>
+		</footer>
+	</div>
+</h:body>
+</html>

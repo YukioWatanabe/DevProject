@@ -1,0 +1,111 @@
+.btn-voltar{
+	height:100%;
+	width:100%;
+	top:0;
+	left:0;
+	color:#fff;
+	display:block;
+	line-height: 70px;
+	text-align: center;
+	text-decoration: none;
+	margin:0 auto;
+}
+
+label{
+	color:#555;
+}
+
+.fa{
+	margin-right:15px;
+}
+
+.conteudo{
+	margin:100px 30px;
+}
+
+.conteudo > h1{
+	color:#3d3d3d;
+	padding-left:15px;
+	border-left:8px solid #ca0000;
+}
+
+.ui-tabs{
+	margin:25px 0;
+	border-color: #d9d9d9;
+	padding:0 0 50px 0 !important;
+}
+
+.ui-panelgrid-cell.ui-grid-col-4{
+	margin-bottom:30px;
+}
+
+.ui-tabs-panel{
+	padding:10px !important;	
+}
+
+.dp-dados-grid input{
+	height:40px;
+}
+
+.ui-fluid .ui-inputtext {
+    border:1px solid #e9e9e9;
+}
+
+.ui-tabs-top.ui-tabs > .ui-tabs-nav li{
+	width:100%;
+}
+
+.dp-bloco{
+	margin-top:20px;
+}
+
+.ui-selectcheckboxmenu {
+	margin:15px 0;
+	width:auto;
+}
+
+.ui-datatable{
+	margin-bottom:30px;
+}
+
+.enviar{
+	float:right;
+}
+
+.dp-bar{
+	display: block;
+	margin-bottom: 30px;
+	position: relative;
+	clear: both;
+}
+
+.ui-toolbar{
+	margin-bottom:10px;
+	margin-top:30px;
+}
+
+@media(min-width: 640px){
+	.ui-grid-responsive .ui-grid-row{
+		margin-bottom: 20px;
+	}
+	
+	.ui-panelgrid-cell{
+		display:block;
+		clear:both;
+	}
+	.ui-tabs-top.ui-tabs > .ui-tabs-nav li{
+		width:auto;
+	}
+}
+
+@media(min-width: 960px){
+	.ui-panelgrid-cell.ui-grid-col-2{
+		margin-bottom:inherit;
+		width:12%;
+	}
+	
+	.ui-panelgrid-cell.ui-grid-col-4{
+		margin-bottom:inherit;
+		width:38%;
+	}
+}

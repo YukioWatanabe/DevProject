@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<f:facet name="first">
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta name="_csrf" content="${_csrf.token}"/>
+ 		<meta name="_csrf_header" content="${_csrf.headerName}"/>
+ 		<link rel="icon" href="#{request.contextPath}/resources/devproject/images/favicon.png" type="image/x-icon" />
+	</f:facet>
+	<title>DevProject - Usuários</title>
+	<h:outputStylesheet library="devproject" name="styles/components.css"/>
+	<h:outputStylesheet library="devproject" name="styles/cadastrar-usuario.css"/>
+	<h:outputStylesheet library="devproject" name="styles/usuarios.css"/>
+</h:head>
+
+<h:body>
+	<div class="ui-grid-responsive container-fluid">
+	
+			<div class="dp-menu">
+				<a href="index.xhtml" class="btn-voltar"><i class="fa fa-mail-reply-all"/>Voltar para a tela inicial</a>
+			</div>
+		
+		<f:metadata>
+			<f:viewAction action="#{usuarios.inicializarNaoLogado}"/>
+		</f:metadata>
+		
+		<h:form prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			<p:toolbar style="padding: 5px;">
+				
+				<p:toolbarGroup styleClass="barra-pesquisa">
+					<p:inputText value="#{usuarios.busca}" placeholder="Busca">
+						<p:ajax process="@this" listener="#{usuarios.pesquisarNaoLogado}" event="keyup" update="listaUsuarios"/>
+					</p:inputText>
+					<p:commandButton id="pesquisar" action="#{usuarios.pesquisarNaoLogado}" value="Pesquisar" icon="fa fa-search" update="listaUsuarios" widgetVar="pesquisar"/>
+				</p:toolbarGroup>
+				
+				<p:toolbarGroup style="clear:both;">
+					<p:selectCheckboxMenu id="habilidades" value="#{usuarios.habilidadesSelecionadas}" label="Habilidades" 
+										  converter="habilidade"
+										  filter="true" filterMatchMode="startsWith" scrollHeight="250" style="clear:both;margin-top:10px; width:300px;">
+						<f:selectItems value="#{usuarios.habilidades}" 
+									   var="habilidade" 
+									   itemLabel="#{habilidade.valor}" 
+									   itemValue="#{habilidade}"/>
+					   <p:ajax event="change" process="@this" global="false"/>
+					</p:selectCheckboxMenu>
+				</p:toolbarGroup>
+				
+			</p:toolbar>
+		</h:form>
+		
+		<p:dataList value="#{usuarios.usuarios}" var="usuarioList" type="unordered" itemType="none" paginator="true" rows="10" 
+		varStatus="index" emptyMessage="Sem resultado" id="listaUsuarios">
+	        
+	        <f:facet name="header">Usuarios</f:facet>
+	       	
+	       	<p:panel header="#{usuarioList.nome} #{usuarioList.sobrenome}" toggleable="true" toggleSpeed="300" widgetVar="panel#{index}" styleClass="ui-grid-row">
+	       		
+	       		<div class="ui-grid-col-2" style="margin-right:30px;">
+	       			<p:graphicImage value="#{imagens.imagemUsuario}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty usuarioList.foto}" style="max-width:300px;">
+			    		<f:param name="id" value="#{usuarioList.id}"/>
+			    	</p:graphicImage>
+				    <p:graphicImage library="devproject" name="images/semimagem.jpg" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{empty usuarioList.foto}" style="max-width:300px;"/>
+	       		</div>
+	       		
+	       		<div class="ui-grid-col-9" style="margin:30px 0;">
+		       		
+		       		<h3 style="margin:15px 0;">Sobre</h3>
+					<h:outputText value="#{not empty usuarioList.sobre ? usuarioList.sobre : 'Descrição não disponível'}" style="word-break:break-all; margin-left:15px;"/>
+					
+					<h3 style="margin:15px 0;">Habilidades</h3>
+					<h:outputText value="Nenhuma habilidade" rendered="#{empty usuarioList.habilidades}" style="margin-left:15px;margin-bottom:15px;"/>
+					<ul class="lista-habilidades">
+						<ui:repeat value="#{usuarioList.habilidades}" var="habilidade" >
+							<li style="line-height: 2em; "><h:outputText value="#{habilidade.valor}"/></li>
+						</ui:repeat>
+					</ul>
+					
+	       		</div>
+			</p:panel>
+	    </p:dataList>
+		<footer>
+			<div class="container ui-grid-row">
+				<div class="ui-grid-col-7 dp-devproject-descricao">
+					<h2>DevProject</h2>
+					<p>Todos os direitos reservados &#169;</p>
+				</div>
+				<div class="ui-grid-col-5 dp-contato">
+					<h3>E-mail</h3>
+					<p>contato.devproject@devproject.com</p>
+					<h3>Skype</h3>
+					<p>atendimento.devproject</p>
+					<h3>Telefone</h3>
+					<p>(13)3365-1994:15</p>
+				</div>
+			</div>
+		</footer>
+	</div>
+</h:body>
+</html>

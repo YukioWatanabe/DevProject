@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="layout.xhtml">
+	<ui:define name="title">
+		DevProject - Acesso Negado
+	</ui:define>
+	<ui:define name="conteudo">
+	    <div style="margin-left: 30px;">
+		    <h1>Acesso Negado</h1>
+		    <p style="margin:30px 0;line-height: 2em;">Você não possui permissão para acessar a página solicitada.<br/>
+		    Por favor, contate com os administradores ou o criador do projeto para solicitar permissão para o acesso da página desejada.</p>
+		    <div class="btn-fluid btn-black" style="margin:15px 0;width:300px;">
+		    	<a href="home.xhtml" >
+		    		<span>Voltar para Home</span>
+		    	</a>
+		    </div>
+	    </div>
+	</ui:define>
+</ui:composition>
+</html>

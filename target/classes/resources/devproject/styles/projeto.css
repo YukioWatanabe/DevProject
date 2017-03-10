@@ -1,0 +1,9 @@
+#requisitos{
+	columns: 2;
+	-webkit-columns: 2;
+	-moz-columns: 2;	
+}
+
+#requisitos li{
+	line-height: 30px;
+}

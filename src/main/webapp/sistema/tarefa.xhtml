@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/sistema/layout.xhtml">
+	<f:metadata>
+		<f:viewAction action="#{tarefa.inicializarVisualizacao}"/>
+	</f:metadata>
+	<ui:define name="title">
+		DevProject - <h:outputText value="#{tarefa.tarefa.titulo}"/>
+	</ui:define>
+	<ui:define name="conteudo">
+		<h1><h:outputText value="#{tarefa.tarefa.titulo}"/></h1>
+				
+		<p class="campo-form" style="margin-top:30px;">
+			Descricao: 
+		</p>
+		<p>
+			<h:outputText value="#{tarefa.tarefa.descricaoTarefa == '' ? 'Nenhuma descrição' : tarefa.tarefa.descricaoTarefa}"/>
+		</p>
+		
+		<p class="campo-form">
+			Descricao do Problema: 
+		</p>
+		<p>
+			<h:outputText value="#{tarefa.tarefa.descricaoProblema == '' || tarefa.tarefa.descricaoProblema == null ? 'Nenhuma descrição' : tarefa.tarefa.descricaoProblema}"/>
+		</p>
+		<div class="ui-grid-row">
+			<p class="campo-form ui-grid-col-6">
+				Data de inicio: 
+				<span>
+					<h:outputText value="#{tarefa.tarefa.dataInicio}">
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</span>
+			</p>
+			<p class="campo-form ui-grid-col-6">
+				Prazo: 
+				<span>
+					<h:outputText value="#{tarefa.tarefa.prazoTermino}">
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+				</span>
+			</p>
+			<p class="campo-form ui-grid-col-6">
+				Tempo estimado: 
+				<span>
+					<h:outputText value="#{tarefa.tarefa.tempoEstimado}"/>
+				</span>
+			</p>
+			<p class="campo-form ui-grid-col-6">
+				Tempo feito: 
+				<span>
+					<h:outputText value="#{tarefa.tarefa.tempoFeito == null || tarefa.tarefa.tempoFeito == '' ? '00:00' : tarefa.tarefa.tempoFeito}"/>
+				</span>
+			</p>
+		</div>
+		<p class="campo-form">
+			Etapa: 
+			<span>
+				<h:outputText value="#{tarefa.tarefa.etapa.descricao}"/>
+			</span>
+		</p>
+		<p:dataTable paginator="true" rows="10" reflow="true" value="#{tarefa.tarefa.participantes}"
+					 var="participanteBusca" rowKey="#{paticipanteBusca.id}" id="tabela-participante" paginatorPosition="bottom"
+					 emptyMessage="Nenhum participante vinculado" style="margin-top:30px;">
+				<f:facet name="header">
+					Participantes
+				</f:facet>
+				<p:column width="10%" headerText="Id" sortable="true" sortBy="#{participanteBusca.id}" styleClass="center-list">
+					<h:outputText value="#{participanteBusca.id}"/>
+				</p:column>
+				
+				<p:column width="60%" headerText="Nome" sortable="true" sortBy="#{participanteBusca.nome}">
+					<h:outputText value="#{participanteBusca.nome}"/>
+				</p:column>
+				
+				<p:column width="20%" headerText="Celular" sortable="true" sortBy="#{participanteBusca.celular}" styleClass="center-list">
+					<h:outputText value="#{participanteBusca.celular == '' ? 'Não disponível' : participanteBusca.celular}"/>
+				</p:column>
+				
+				<p:column width="10%" headerText="Perfil" styleClass="center-list">
+					<p:commandButton value="Ver" icon="fa fa-eye" action="#{tarefa.verPerfilParticipante}" id="btn-ver">
+						<f:param name="id" value="#{participanteBusca.id}"/>
+					</p:commandButton>
+				</p:column> 
+		</p:dataTable>
+		<div style="margin:30px 0;width:100%;">
+	    	<p:button value="Voltar" icon="fa fa-mail-reply-all" outcome="/sistema/iteracao.xhtml?id=#{tarefa.tarefa.iteracao.id}"/>
+		</div>
+	</ui:define>
+</ui:composition>
+</html>

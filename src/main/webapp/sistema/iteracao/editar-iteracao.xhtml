@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/sistema/layout.xhtml">
+	<ui:define name="titulo">
+	    DevProject - Editar iteração
+	</ui:define>
+	<f:metadata>
+		<f:viewAction action="#{iteracao.inicializarEditar}"/>
+	</f:metadata>
+	<ui:define name="conteudo">
+	    <h1>Editar iteração</h1>
+	    <h:form prependId="false">
+	    	<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		    <p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" 
+						 styleClass="no-border ui-fluid" style="clear:both; width:100%;margin-top:30px;">
+			    <p:outputLabel value="Titulo da iteração" id="titulo-iteracao"/>
+			    <p:inputText value="#{iteracao.iteracao.titulo}" maxlength="100" label="titulo-iteracao"/>
+		    </p:panelGrid>
+			
+			<p:panelGrid columns="2" columnClasses="ui-grid-col-6, ui-grid-col-6" layout="grid" 
+						 styleClass="no-border ui-fluid" style="clear:both; width:100%;margin-top:30px;">	    
+			    <h:panelGroup>
+				    <p:outputLabel value="Data de inicio" id="data-inicio" style="margin-bottom:15px;margin-bottom:15px;"/>
+					<p:calendar value="#{iteracao.iteracao.dataInicio}" label="data-inicio" mask="99/99/9999" style="margin-top:15px;"
+					mindate="#{iteracao.dataAtual}" pattern="dd/MM/yyyy"/>
+				</h:panelGroup>
+				
+				<h:panelGroup>
+					<p:outputLabel value="Data final" id="data-final" style="margin-bottom:15px;"/>
+					<p:calendar value="#{iteracao.iteracao.dataFim}" label="data-final" mask="99/99/9999" style="margin-top:15px;"
+					mindate="#{iteracao.dataAtual}" pattern="dd/MM/yyyy"/>
+				</h:panelGroup>
+			</p:panelGrid>
+			
+			<p:panelGrid columns="1" columnClasses="ui-grid-col-12" layout="grid" 
+						 styleClass="no-border ui-fluid" style="clear:both; width:100%;margin-top:30px;">
+				<p:outputLabel value="Descrição" id="descricao"/>
+				<p:inputTextarea cols="100" rows="10" label="descricao" style="clear:both; width:100%;" 
+				value="#{iteracao.iteracao.descricao}" maxlength="500" counter="contador" counterTemplate="{0} caracteres restantes."/>
+				<p style="text-align:right;"><h:outputText id="contador"/></p>
+			</p:panelGrid>
+			
+			<div style="margin:30px 10px;">
+				<p:selectBooleanCheckbox value="#{iteracao.iteracao.finalizada}" id="finalizada" style="margin-right:10px;"/>
+				<p:outputLabel value="Finalizada" for="finalizada"/>
+			</div>
+			
+			<p:commandButton value="Salvar" icon="fa fa-save" action="#{iteracao.atualizar}" style="margin-left:10px;margin-top:15px;"/>
+			<p:button value="Voltar" icon="fa fa-mail-reply-all" outcome="/sistema/iteracao.xhtml?id=#{iteracao.iteracao.id}" 
+					  style="margin-left:10px;margin-top:15px;"/>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

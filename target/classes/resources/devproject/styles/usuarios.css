@@ -1,0 +1,64 @@
+.lista-habilidades{
+	columns:2;
+	margin-left:15px;
+	margin-bottom:15px;
+}
+
+.barra-pesquisa{
+	width:100%;
+	box-sizing:border-box;
+}
+
+.barra-pesquisa > input{
+	width:50%;
+	box-sizing:border-box;
+}
+
+.barra-pesquisa > button{
+	width:49%;
+	box-sizing:border-box;
+}
+
+.botoes-auxiliares, .botoes-auxiliares > button{
+	width:100%;
+	clear:both;
+}
+
+.botoes-filtro > button{
+	float:left;
+	clear:both;
+	width:100%;
+}
+@media(min-width:640px){
+	.conteudo{
+		margin:120px 0px;
+	}
+}
+@media(min-width:820px){
+	.lista-habilidades{
+		columns:3;
+	}
+	.barra-pesquisa{
+		width:75%;
+	}
+	.barra-pesquisa > input{
+		width:50%;
+	}
+	
+	.barra-pesquisa > button{
+		width:auto;
+	}
+	.botoes-auxiliares > button{
+		width:auto;
+		height:auto;
+		clear: none;
+	}
+	
+	.botoes-auxiliares{
+		width:25%;
+		clear:none;
+	}
+	.botoes-filtro > button{
+		margin-top:10px;
+	}
+}

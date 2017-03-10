@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="layout.xhtml">
+	<ui:define name="title">DevProject - Solicitações</ui:define>
+	<ui:define name="estilo">
+	    <h:outputStylesheet library="devproject" name="styles/usuarios.css"/>
+	</ui:define>
+	<ui:define name="conteudo">
+		
+		<f:metadata>
+			<f:viewAction action="#{solicitacoes.inicializar}"/>
+		</f:metadata>
+		<h:form id="frm2">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		
+			<p:toolbar style="padding: 5px;">
+			
+				<p:toolbarGroup align="left" styleClass="botoes-auxiliares botoes-filtro" style="clear:both;width:100%;">
+					<p:commandButton action="#{solicitacoes.porAmizade}" value="Amizade" 
+					icon="fa fa-user-plus" update="@form"/>
+					<p:commandButton action="#{solicitacoes.porRecrutamento}" value="Recrutamento" 
+					icon="fa fa-edit" styleClass="ui-fluid" update="@form"/>
+					<p:commandButton action="#{solicitacoes.porParticipacao}" value="Participação" 
+					icon="fa fa-users" styleClass="ui-fluid" update="@form"/>
+				</p:toolbarGroup>
+				
+			</p:toolbar>
+		
+			<p:dataList value="#{solicitacoes.solicitacoesRecrutamento}" var="solicitacaoTabela" type="unordered" itemType="none" paginator="true" rows="10" 
+			varStatus="index" emptyMessage="Sem resultado" id="listaSolicitacoesRecrutamento" rendered="#{solicitacoes.tipoBusca == 'recrutamento'}" >
+		        
+		        <f:facet name="header">Solicitações de recrutamento</f:facet>
+		       	
+		       	<p:panel header="#{solicitacaoTabela.pk.receptor.titulo}" toggleable="true" toggleSpeed="300" widgetVar="panel#{index}" styleClass="ui-grid-row">
+		       		
+		       		<div class="ui-grid-col-2" style="margin-right:30px;">
+		       			<p:graphicImage value="#{imagens.imagemUsuario}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty solicitacaoTabela.pk.solicitante.foto}" style="max-width:300px;">
+				    		<f:param name="id" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+				    	</p:graphicImage>
+					    <p:graphicImage library="devproject" name="images/semimagem.jpg" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{empty solicitacaoTabela.pk.solicitante.foto}" style="max-width:300px;"/>
+		       		</div>
+		       		
+		       		<div class="ui-grid-col-9" style="margin:30px 0;">
+			       		
+			       		<h3 style="margin:15px 0;">
+			       			<h:outputText value="#{solicitacaoTabela.pk.solicitante.nome} #{solicitacaoTabela.pk.solicitante.sobrenome}"/>
+			       		</h3>
+						
+						<p:button value="Ver perfil" outcome="/sistema/perfil.xhtml?id=#{solicitacaoTabela.pk.solicitante.id}" icon="fa fa-eye"/>
+						
+						<h3 style="margin:15px 0;">Mensagem</h3>
+						<h:outputText value="#{solicitacaoTabela.mensagem != '' ? solicitacaoTabela.mensagem : 'Sem mensagem'}" 
+						style="margin-left:15px;margin-bottom:15px;"/>
+						
+						<div style="margin-top:30px;clear:both;">
+							<p:commandButton action="#{solicitacoes.aceitarSolicitacaoRecrutamento}" value="Aceitar Solicitação" icon="fa fa-thumbs-o-up" update="listaSolicitacoesRecrutamento">
+								<f:param name="idSolicitante" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+								<f:param name="idReceptor" value="#{solicitacaoTabela.pk.receptor.id}"/>
+							</p:commandButton>
+							<p:commandButton action="#{solicitacoes.rejeitarSolicitacaoRecrutamento}" value="Rejeitar Solicitação" icon="fa fa-thumbs-o-down" update="listaSolicitacoesRecrutamento">
+								<p:confirm header="Confirmação de rejeição" message="Deseja mesmo rejeitar essa solicitação?" icon="ui-icon-alert" />
+								<f:param name="idSolicitante" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+								<f:param name="idReceptor" value="#{solicitacaoTabela.pk.receptor.id}"/>
+							</p:commandButton>
+						</div>
+		       		</div>
+				</p:panel>
+		    </p:dataList>
+		    
+		    <p:dataList value="#{solicitacoes.solicitacoesAmizade}" var="solicitacaoTabela" type="unordered" itemType="none" paginator="true" rows="10" 
+			varStatus="index" emptyMessage="Sem resultado" id="listaSolicitacoesAmizade" rendered="#{solicitacoes.tipoBusca == 'amizade'}">
+		        
+		        <f:facet name="header">Solicitações de amizade</f:facet>
+		       	
+		       	<p:panel header="#{solicitacaoTabela.pk.solicitante.nome} #{solicitacaoTabela.pk.solicitante.sobrenome}" 
+		       	toggleable="true" toggleSpeed="300" widgetVar="panel#{index}" styleClass="ui-grid-row">
+		       		
+		       		<div class="ui-grid-col-2" style="margin-right:30px;">
+		       			<p:graphicImage value="#{imagens.imagemUsuario}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty solicitacaoTabela.pk.solicitante.foto}" style="max-width:300px;">
+				    		<f:param name="id" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+				    	</p:graphicImage>
+					    <p:graphicImage library="devproject" name="images/semimagem.jpg" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{empty solicitacaoTabela.pk.solicitante.foto}" style="max-width:300px;"/>
+		       		</div>
+		       		
+		       		<div class="ui-grid-col-9" style="margin:30px 0;">
+			       		
+			       		<h3 style="margin:15px 0;">
+			       			<h:outputText value="#{solicitacaoTabela.pk.solicitante.nome} #{solicitacaoTabela.pk.solicitante.sobrenome}"/>
+			       		</h3>
+						
+						<p:button value="Ver perfil" outcome="/sistema/perfil.xhtml?id=#{solicitacaoTabela.pk.solicitante.id}" icon="fa fa-eye"/>
+						
+						<h3 style="margin:15px 0;">Mensagem</h3>
+						<h:outputText value="#{solicitacaoTabela.mensagem != '' ? solicitacaoTabela.mensagem : 'Sem mensagem'}" 
+						style="margin-left:15px;margin-bottom:15px;"/>
+						
+						<div style="margin-top:30px;clear:both;">
+							<p:commandButton action="#{solicitacoes.aceitarSolicitacaoAmizade}" value="Aceitar Solicitação" icon="fa fa-thumbs-o-up" update="listaSolicitacoesAmizade">
+								<f:param name="idSolicitante" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+								<f:param name="idReceptor" value="#{solicitacaoTabela.pk.receptor.id}"/>
+							</p:commandButton>
+							<p:commandButton action="#{solicitacoes.rejeitarSolicitacaoAmizade}" value="Rejeitar Solicitação" icon="fa fa-thumbs-o-down" update="listaSolicitacoesAmizade">
+								<p:confirm header="Confirmação de rejeição" message="Deseja mesmo rejeitar essa solicitação?" icon="ui-icon-alert" />
+								<f:param name="idSolicitante" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+								<f:param name="idReceptor" value="#{solicitacaoTabela.pk.receptor.id}"/>
+							</p:commandButton>
+						</div>
+		       		</div>
+				</p:panel>
+		    </p:dataList>
+		    <p:dataList value="#{solicitacoes.solicitacoesParticipacao}" var="solicitacaoTabela" type="unordered" itemType="none" paginator="true" rows="10" 
+			varStatus="index" emptyMessage="Sem resultado" id="listaSolicitacoesParticipacao" rendered="#{solicitacoes.tipoBusca == 'participacao'}" >
+		        
+		        <f:facet name="header">Solicitações de participação</f:facet>
+		       	
+		       	<p:panel header="#{solicitacaoTabela.pk.solicitante.titulo}" toggleable="true" toggleSpeed="300" widgetVar="panel#{index}" styleClass="ui-grid-row">
+		       		
+		       		<div class="ui-grid-col-2" style="margin-right:30px;">
+		       			<p:graphicImage value="#{imagens.imagemProjeto}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty solicitacaoTabela.pk.solicitante.logo}" style="max-width:300px; margin:0 auto;">
+					    	<f:param name="id" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+					    </p:graphicImage>
+				    	<p:graphicImage library="devproject" name="images/projeto-semimagem.png" rendered="#{empty solicitacaoTabela.pk.solicitante.logo}"
+				    	styleClass="dp-imagem-responsiva dp-imagem-thumbnail" style="max-width:300px; margin:0 auto;"/>
+		       		</div>
+		       		
+		       		<div class="ui-grid-col-9" style="margin:30px 0;">
+			       		
+						<p:button value="Ver projeto" outcome="/sistema/projeto.xhtml?id=#{solicitacaoTabela.pk.solicitante.id}" icon="fa fa-eye"/>
+						
+						<h3 style="margin:15px 0;">Mensagem</h3>
+						<h:outputText value="#{solicitacaoTabela.mensagem != '' ? solicitacaoTabela.mensagem : 'Sem mensagem'}" 
+						style="margin-left:15px;margin-bottom:15px;"/>
+						
+						<div style="margin-top:30px;clear:both;">
+							<p:commandButton action="#{solicitacoes.aceitarSolicitacaoParticipacao}" value="Aceitar Solicitação" icon="fa fa-thumbs-o-up" update="listaSolicitacoesParticipacao">
+								<f:param name="idSolicitante" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+								<f:param name="idReceptor" value="#{solicitacaoTabela.pk.receptor.id}"/>
+							</p:commandButton>
+							<p:commandButton action="#{solicitacoes.rejeitarSolicitacaoParticipacao}" value="Rejeitar Solicitação" icon="fa fa-thumbs-o-down" update="listaSolicitacoesParticipacao">
+								<p:confirm header="Confirmação de rejeição" message="Deseja mesmo rejeitar essa solicitação?" icon="ui-icon-alert" />
+								<f:param name="idSolicitante" value="#{solicitacaoTabela.pk.solicitante.id}"/>
+								<f:param name="idReceptor" value="#{solicitacaoTabela.pk.receptor.id}"/>
+							</p:commandButton>
+						</div>
+		       		</div>
+				</p:panel>
+		    </p:dataList>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

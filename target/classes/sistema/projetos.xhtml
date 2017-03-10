@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="layout.xhtml">
+	<ui:define name="title">DevProject - Busca de Projetos</ui:define>
+	<ui:define name="estilo">
+	    <h:outputStylesheet library="devproject" name="styles/usuarios.css"/>
+	</ui:define>
+	<ui:define name="conteudo">
+		
+		<f:metadata>
+			<f:viewAction action="#{projetos.inicializar}"/>
+		</f:metadata>
+		
+		<h:form prependId="false">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			<p:toolbar style="padding: 5px;">
+				
+				<p:toolbarGroup styleClass="barra-pesquisa">
+					<p:inputText value="#{projetos.busca}" placeholder="Busca">
+						<p:ajax process="@this" listener="#{projetos.pesquisar}" event="keyup" update="listaProjetos"/>
+					</p:inputText>
+					<p:commandButton id="pesquisar" action="#{projetos.pesquisar}" value="Pesquisar" icon="fa fa-search" 
+					update="listaProjetos" widgetVar="pesquisar"/>
+				</p:toolbarGroup>
+				
+				<p:toolbarGroup align="right" styleClass="botoes-auxiliares">
+					<p:button value="Novo projeto" icon="fa fa-asterisk" outcome="/sistema/projeto/cadastrar-projeto.xhtml" style="float:right"/>
+				</p:toolbarGroup>
+				
+				<p:toolbarGroup align="left" styleClass="botoes-auxiliares botoes-filtro" style="clear:both;width:100%;">
+					<p:commandButton action="#{projetos.porMeusProjetos}" value="Meus Projetos" icon="fa fa-user" update="listaProjetos"/>
+					<p:commandButton action="#{projetos.porRecomendados}" value="Recomendados" icon="fa fa-star" update="listaProjetos"/>
+					<p:commandButton action="#{projetos.porParticipantes}" value="Participo" icon="fa fa-users" update="listaProjetos"/>
+				</p:toolbarGroup>
+				
+				<p:toolbarGroup style="clear:both;">
+					<p:selectCheckboxMenu id="habilidades" value="#{projetos.habilidadesSelecionadas}" label="Requisitos" 
+										  converter="habilidade"
+										  filter="true" filterMatchMode="startsWith" scrollHeight="250" style="clear:both;margin-top:10px; width:300px;">
+						<f:selectItems value="#{projetos.habilidades}" 
+									   var="habilidade" 
+									   itemLabel="#{habilidade.valor}" 
+									   itemValue="#{habilidade}"/>
+					   <p:ajax event="change" process="@this" global="false"/>
+					</p:selectCheckboxMenu>
+				</p:toolbarGroup>
+				
+			</p:toolbar>
+		</h:form>
+		
+		<p:dataList value="#{projetos.projetosBusca}" var="projetoBusca" type="unordered" itemType="none" paginator="true" rows="10" 
+		varStatus="index" emptyMessage="Sem resultado" id="listaProjetos">
+	        
+	        <f:facet name="header">Projetos</f:facet>
+	       	
+	       	<p:panel header="#{projetoBusca.titulo}" toggleable="true" toggleSpeed="300" widgetVar="panel#{index}" styleClass="ui-grid-row">
+	       		
+	       		<div class="ui-grid-col-2" style="margin-right:30px;">
+		       		<p:graphicImage value="#{imagens.imagemProjeto}" styleClass="dp-imagem-responsiva dp-imagem-thumbnail" rendered="#{not empty projetoBusca.logo}" style="max-width:300px; margin:0 auto;">
+				    	<f:param name="id" value="#{projetoBusca.id}"/>
+				    </p:graphicImage>
+			    	<p:graphicImage library="devproject" name="images/projeto-semimagem.png" rendered="#{empty projetoBusca.logo}"
+			    	styleClass="dp-imagem-responsiva dp-imagem-thumbnail" style="max-width:300px; margin:0 auto;"/>
+	       		</div>
+	       		
+	       		
+	       		<div class="ui-grid-col-9" style="margin:30px 0;">
+		       		
+		       		<h3 style="margin:15px 0;">Sobre</h3>
+					<h:outputText value="#{not empty projetoBusca.descricao ? projetoBusca.descricao : 'Descrição não disponível'}" style="word-break:break-all; margin-left:15px;"/>
+					
+					<h3 style="margin:15px 0;">Requisitos</h3>
+					<h:outputText value="Nenhuma habilidade" rendered="#{empty projetoBusca.requisitos}" style="margin-left:15px;margin-bottom:15px;"/>
+					<ul class="lista-habilidades">
+						<ui:repeat value="#{projetoBusca.requisitos}" var="habilidade" >
+							<li style="line-height: 2em; "><h:outputText value="#{habilidade.valor}"/></li>
+						</ui:repeat>
+					</ul>
+					
+					<h:form id="frm2">
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+						<p:commandButton action="#{projetos.visualizarProjeto}" value="Visualizar projeto">
+							<f:param name="id" value="#{projetoBusca.id}"/>
+						</p:commandButton>
+					</h:form>
+	       		</div>
+			</p:panel>
+	    </p:dataList>
+	</ui:define>
+</ui:composition>
+</html>

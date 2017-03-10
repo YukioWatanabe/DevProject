@@ -1,0 +1,79 @@
+.dp-texto-margem > h2,h3,h4,h5,p{
+	line-height: 40px;
+}
+
+.dp-texto-margem > h1,h2{
+	margin-bottom: 20px;
+}
+
+.dp-paragrafo{
+	padding:20px 10px;
+}
+
+#frm input{
+	width:95%;
+}
+
+#frm textarea{
+	width:95%;
+}
+
+#email{
+	width:95%;
+}
+
+#dataNascimento > input{
+	width:95%;
+}
+
+#sobre{
+	min-height: 200px;
+}
+
+.destaque-titulo-vermelho{
+	margin-top:20px;
+	font-size: 2.7em;
+}
+
+.componentes-habilidades{
+	margin-bottom:20px;
+}
+
+@media(min-width:640px){
+	.dp-texto-margem > h1,h2,h3,h4,h5,p{
+		margin-left: 40px;
+	}
+	
+	#tabela-habilidades{
+		margin-left:35px;
+	}
+	
+	.destaque-titulo-vermelho{
+		margin-top:0;
+	}
+	
+	#email{
+		width:38.5% !important;
+	}
+	
+	#frm textarea{
+		width:90%;
+	}
+	
+	#dataNascimento > input{
+		width:38.5% !important;
+	}
+	
+	.dp-paragrafo{
+		padding:20px 10px;
+	}
+	
+	#frm input{
+		width:80%;
+	}
+	
+	.componentes-habilidades{
+		margin-left:35px;
+		margin-bottom:20px;
+	}
+}
